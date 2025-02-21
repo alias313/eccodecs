@@ -1,3 +1,5 @@
+_tables_initialized = False  # Private variable
+
 gf_exp = [0] * 512
 gf_log = [0] * 256
 
@@ -6,6 +8,7 @@ def init_tables(prim=0x11d):
     # prim is the primitive (binary) polynomial. Since it's a polynomial in the binary sense,
     # it's only in fact a single galois field value between 0 and 255, and not a list of gf values.
     global gf_exp, gf_log
+    global _tables_initialized
     gf_exp = [0] * 512 # anti-log (exponential) table
     gf_log = [0] * 256 # log table
     # For each possible value in the galois field 2^8, we will pre-compute the logarithm and anti-logarithm (exponential) of this value
@@ -21,6 +24,8 @@ def init_tables(prim=0x11d):
     # stay inside the bounds (because we will mainly use this table for the multiplication of two GF numbers, no more).
     for i in range(255, 509):
         gf_exp[i] = gf_exp[i - 255]
+
+    _tables_initialized = True
     return [gf_log, gf_exp]
 
 def gf_add(x, y):
@@ -32,6 +37,8 @@ def gf_sub(x, y):
 def gf_mul(x,y):
     if x==0 or y==0:
         return 0
+    if not _tables_initialized:
+        init_tables()
     return gf_exp[gf_log[x] + gf_log[y]] # should be gf_exp[(gf_log[x]+gf_log[y])%255] if gf_exp wasn't oversized
 
 def gf_div(x,y):

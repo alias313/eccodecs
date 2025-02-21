@@ -1,6 +1,5 @@
-from arithmetic_gf import init_tables, gf_mul
-
 def gf_poly_scale(p,x):
+    from arithmetic_gf import gf_mul
     r = [0] * len(p)
     for i in range(0, len(p)):
         r[i] = gf_mul(p[i], x)
@@ -14,9 +13,8 @@ def gf_poly_add(p, q):
         r[i+len(r)-len(q)] ^= q[i]
     return r
 
-init_tables()
-
 def gf_poly_mul(p,q):
+    from arithmetic_gf import gf_mul
     '''Multiply two polynomials, inside Galois Field'''
     # Pre-allocate the result array
     r = [0] * (len(p)+len(q)-1)
@@ -29,6 +27,7 @@ def gf_poly_mul(p,q):
     return r
 
 def gf_poly_div(dividend, divisor):
+    from arithmetic_gf import gf_mul
     '''Fast polynomial division by using Extended Synthetic Division and optimized for GF(2^p) computations
     (doesn't work with standard polynomials outside of this galois field, see the Wikipedia article for generic algorithm).'''
     # CAUTION: this function expects polynomials to follow the opposite convention at decoding:
@@ -55,6 +54,7 @@ def gf_poly_div(dividend, divisor):
     return msg_out[:separator], msg_out[separator:] # return quotient, remainder.
 
 def gf_poly_eval(poly, x):
+    from arithmetic_gf import gf_mul
     '''Evaluates a polynomial in GF(2^p) given the value for x. This is based on Horner's scheme for maximum efficiency.'''
     y = poly[0]
     for i in range(1, len(poly)):
